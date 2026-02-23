@@ -67,8 +67,8 @@ export default function RegistrationForm() {
                                     <input type="number" name="family_members_12_plus" placeholder="সংখ্যা লিখুন" min="0" required />
                                 </div>
                                 <div className={styles.formGroup}>
-                                    <label>১২ বছরের নিচে পরিবার সদস্য সংখ্যা *</label>
-                                    <input type="number" name="family_members_under_12" placeholder="সংখ্যা লিখুন" min="0" required />
+                                    <label>১২ বছরের নিচে পরিবার সদস্য সংখ্যা </label>
+                                    <input type="number" name="family_members_under_12" placeholder="সংখ্যা লিখুন" min="0" />
                                 </div>
                             </div>
                             <div className={styles.formGroup}>
@@ -89,7 +89,7 @@ export default function RegistrationForm() {
                                     </label>
                                     <label className={styles.radioLabel}>
                                         <input type="radio" name="payment" value="cash" />
-                                        সরাসরি নগদ (শাহা)
+                                        সরাসরি নগদ (শান্ত)
                                     </label>
                                 </div>
                             </div>
@@ -105,8 +105,8 @@ export default function RegistrationForm() {
                                 </div>
                             </div>
                             <div className={styles.formGroup}>
-                                <label>ট্রানজেকশন আইডি নাম্বার এবং পেমেন্ট স্ক্রিনশট যুক্ত করুন</label>
-                                <input type="text" name="transaction_id" placeholder="ট্রানজেকশন আইডি লিখুন" />
+                                <label>ট্রানজেকশন আইডি নাম্বার দিন *</label>
+                                <input type="text" name="transaction_id" placeholder="ট্রানজেকশন আইডি লিখুন" required />
                             </div>
 
                             <button type="submit" className={styles.btnSubmit} disabled={loading}>
