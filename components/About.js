@@ -21,8 +21,8 @@ export default function About() {
                                 <div className={styles.lbl}>চলতি বছর</div>
                             </div>
                             <div className={styles.stat}>
-                                <div className={styles.num}>৪+</div>
-                                <div className={styles.lbl}>যোগাযোগ কর্মকর্তা</div>
+                                <div className={styles.num}>৫০+</div>
+                                <div className={styles.lbl}>সদস্য</div>
                             </div>
                             <div className={styles.stat}>
                                 <div className={styles.num}>বার্ষিক</div>
