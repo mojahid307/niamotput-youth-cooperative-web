@@ -6,6 +6,9 @@ import styles from './dashboard.module.css';
 
 export default function AdminDashboard() {
     const [registrations, setRegistrations] = useState([]);
+    const [filteredRegistrations, setFilteredRegistrations] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [paymentFilter, setPaymentFilter] = useState('all');
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const router = useRouter();
@@ -34,9 +37,27 @@ export default function AdminDashboard() {
             console.error('Error fetching registrations:', error);
         } else {
             setRegistrations(data);
+            setFilteredRegistrations(data);
         }
         setLoading(false);
     };
+
+    useEffect(() => {
+        let result = registrations;
+
+        if (searchTerm) {
+            result = result.filter(reg =>
+                reg.member_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                reg.mobile_number.includes(searchTerm)
+            );
+        }
+
+        if (paymentFilter !== 'all') {
+            result = result.filter(reg => reg.payment_method === paymentFilter);
+        }
+
+        setFilteredRegistrations(result);
+    }, [searchTerm, paymentFilter, registrations]);
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -73,7 +94,26 @@ export default function AdminDashboard() {
                 <div className={styles.tableContainer}>
                     <div className={styles.tableHeader}>
                         <h2>নিবন্ধিত সদস্যদের তালিকা</h2>
-                        <button onClick={fetchRegistrations} className={styles.btnRefresh}>রিফ্রেশ</button>
+                        <div className={styles.actions}>
+                            <input
+                                type="text"
+                                placeholder="নাম বা মোবাইল দিয়ে খুঁজুন..."
+                                className={styles.searchInput}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <select
+                                className={styles.filterSelect}
+                                value={paymentFilter}
+                                onChange={(e) => setPaymentFilter(e.target.value)}
+                            >
+                                <option value="all">সব পেমেন্ট</option>
+                                <option value="bkash">বিকাশ</option>
+                                <option value="nagad">নগদ</option>
+                                <option value="cash">সরাসরি (শান্ত)</option>
+                            </select>
+                            <button onClick={fetchRegistrations} className={styles.btnRefresh}>রিফ্রেশ</button>
+                        </div>
                     </div>
 
                     {loading ? (
@@ -91,11 +131,13 @@ export default function AdminDashboard() {
                                         <th>পরিবার (-১২)</th>
                                         <th>পেমেন্ট</th>
                                         <th>পরিমাণ</th>
+                                        <th>ট্রানজেকশন মোবাইল</th>
+                                        <th>ট্রানজেকশন আইডি</th>
                                         <th>তারিখ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {registrations.map((reg) => (
+                                    {filteredRegistrations.map((reg) => (
                                         <tr key={reg.id}>
                                             <td>{reg.member_name}</td>
                                             <td>{reg.mobile_number}</td>
@@ -103,6 +145,8 @@ export default function AdminDashboard() {
                                             <td>{reg.family_members_under_12}</td>
                                             <td>{reg.payment_method}</td>
                                             <td>৳ {reg.total_amount}</td>
+                                            <td>{reg.transaction_mobile}</td>
+                                            <td><code>{reg.transaction_id}</code></td>
                                             <td>{new Date(reg.created_at).toLocaleDateString('bn-BD')}</td>
                                         </tr>
                                     ))}

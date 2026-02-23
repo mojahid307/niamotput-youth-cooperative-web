@@ -4,22 +4,39 @@ import styles from './RegistrationForm.module.css';
 
 export default function RegistrationForm() {
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState({ type: '', text: '' });
+    const [num12Plus, setNum12Plus] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(1000);
+
+    const handleNumChange = (e) => {
+        const val = parseInt(e.target.value) || 0;
+        setNum12Plus(val);
+        setTotalAmount(1000 + (val * 500));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setMessage({ type: '', text: '' });
 
         const formData = new FormData(e.target);
         const data = {
             member_name: formData.get('member_name'),
             family_members_12_plus: parseInt(formData.get('family_members_12_plus')),
-            family_members_under_12: parseInt(formData.get('family_members_under_12')),
+            family_members_under_12: parseInt(formData.get('family_members_under_12')) || 0,
             mobile_number: formData.get('mobile_number'),
             payment_method: formData.get('payment'),
-            total_amount: parseInt(formData.get('total_amount')),
+            total_amount: totalAmount,
             transaction_mobile: formData.get('transaction_mobile'),
             transaction_id: formData.get('transaction_id')
         };
+
+        // Simple validation
+        if (data.mobile_number.length < 11 || data.transaction_mobile.length < 11) {
+            setMessage({ type: 'error', text: 'সঠিক মোবাইল নাম্বার প্রদান করুন (১১ ডিজিট)' });
+            setLoading(false);
+            return;
+        }
 
         try {
             const response = await fetch('/api/register', {
@@ -31,13 +48,15 @@ export default function RegistrationForm() {
             const result = await response.json();
 
             if (response.ok) {
-                alert('আপনার নিবন্ধন সফলভাবে সম্পন্ন হয়েছে!');
+                setMessage({ type: 'success', text: 'আপনার নিবন্ধন সফলভাবে সম্পন্ন হয়েছে!' });
                 e.target.reset();
+                setNum12Plus(0);
+                setTotalAmount(1000);
             } else {
-                alert('ত্রুটি: ' + (result.error || 'নিবন্ধন ব্যর্থ হয়েছে'));
+                setMessage({ type: 'error', text: 'ত্রুটি: ' + (result.error || 'নিবন্ধন ব্যর্থ হয়েছে') });
             }
         } catch (err) {
-            alert('নেটওয়ার্ক ত্রুটি। আবার চেষ্টা করুন।');
+            setMessage({ type: 'error', text: 'নেটওয়ার্ক ত্রুটি। আবার চেষ্টা করুন।' });
         } finally {
             setLoading(false);
         }
@@ -64,7 +83,15 @@ export default function RegistrationForm() {
                             <div className={styles.formRow}>
                                 <div className={styles.formGroup}>
                                     <label>পরিবারের সদস্য সংখ্যা (১২+ বছর) *</label>
-                                    <input type="number" name="family_members_12_plus" placeholder="সংখ্যা লিখুন" min="0" required />
+                                    <input
+                                        type="number"
+                                        name="family_members_12_plus"
+                                        placeholder="সংখ্যা লিখুন"
+                                        min="0"
+                                        value={num12Plus}
+                                        onChange={handleNumChange}
+                                        required
+                                    />
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>১২ বছরের নিচে পরিবার সদস্য সংখ্যা </label>
@@ -94,20 +121,28 @@ export default function RegistrationForm() {
                                 </div>
                             </div>
 
-                            <div className={styles.formRow}>
-                                <div className={styles.formGroup}>
-                                    <label>নিবন্ধন ফির মোট পরিমাণ *</label>
-                                    <input type="number" name="total_amount" placeholder="মোট টাকা" required />
+                            <div className={styles.transactionSection}>
+                                <div className={styles.formRow}>
+                                    <div className={styles.formGroup}>
+                                        <label>নিবন্ধন ফির মোট পরিমাণ (স্বয়ংক্রিয়)</label>
+                                        <input type="number" name="total_amount" value={totalAmount} readOnly className={styles.readOnlyInput} />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>ট্রানজেকশন মোবাইল নাম্বার *</label>
+                                        <input type="tel" name="transaction_mobile" placeholder="01XXXXXXXXX" required />
+                                    </div>
                                 </div>
                                 <div className={styles.formGroup}>
-                                    <label>ট্রানজেকশন মোবাইল নাম্বার *</label>
-                                    <input type="tel" name="transaction_mobile" placeholder="01XXXXXXXXX" required />
+                                    <label>ট্রানজেকশন আইডি নাম্বার দিন *</label>
+                                    <input type="text" name="transaction_id" placeholder="ট্রানজেকশন আইডি লিখুন" required />
                                 </div>
                             </div>
-                            <div className={styles.formGroup}>
-                                <label>ট্রানজেকশন আইডি নাম্বার দিন *</label>
-                                <input type="text" name="transaction_id" placeholder="ট্রানজেকশন আইডি লিখুন" required />
-                            </div>
+
+                            {message.text && (
+                                <div className={`${styles.feedback} ${styles[message.type]}`}>
+                                    {message.text}
+                                </div>
+                            )}
 
                             <button type="submit" className={styles.btnSubmit} disabled={loading}>
                                 {loading ? 'প্রক্রিয়াকরণ চলছে...' : '✅ নিবন্ধন সম্পন্ন করুন'}
