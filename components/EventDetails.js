@@ -55,7 +55,7 @@ export default function EventDetails() {
                             <div className={styles.paymentBadges}>
                                 <span className={styles.payBadge}>📱 বিকাশ: 01743467764</span>
                                 <span className={styles.payBadge}>💚 নগদ: 01632269384</span>
-                                <span className={styles.payBadge}>💵 সরাসরি নগদ (শাহা)</span>
+                                <span className={styles.payBadge}>💵 সরাসরি নগদ (শান্ত)</span>
                             </div>
                         </div>
                     </div>
