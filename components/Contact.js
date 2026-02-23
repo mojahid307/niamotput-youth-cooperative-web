@@ -26,7 +26,8 @@ export default function Contact() {
                 </div>
 
                 <div className={styles.emailBlock}>
-                    Developed by Mojahid. Contact: <a href="mailto:business.risad@gmail.com">business.risad@gmail.com</a>
+                    Developed by Mojahidul Islam <br />
+                    Contact: <a href="mailto:business.risad@gmail.com">business.risad@gmail.com</a>
                 </div>
             </div>
         </section>
